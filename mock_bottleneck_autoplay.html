@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #e2e8f0; display: flex; flex-direction:column; align-items:center;  height: 100vh; margin:0;}
+        .slack { width: 700px; height: 500px; border: 1px solid #ddd; margin-top: 50px; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background:#fff;}
+        .header { background: #0f172a; padding: 15px; color: white; font-weight: bold; border-bottom: 3px solid #f59e0b;}
+        .chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;}
+        .msg { display: flex; gap: 10px; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s;}
+        .msg.visible { opacity: 1; transform: translateY(0); }
+        .icon { width: 45px; height: 45px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #e2e8f0;}
+        .name { font-weight: bold; margin-bottom: 5px; color:#1e293b; font-size: 15px;}
+        .text { font-size: 15px; color: #334155; line-height: 1.4;}
+        .typing { display: none; padding: 10px; color: #64748b; font-style: italic; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="slack">
+        <div class="header"># p-data-platform 🛡️ </div>
+        <div class="chat" id="chat">
+            <div class="typing" id="typing">💬 Someone is typing...</div>
+        </div>
+    </div>
+    <script>
+        const sequence = [
+            { i: "👨‍💻", n: "Platform Lead", m: "Hi team, Ingestion seems blocked. Any updates?", w: 1000 },
+            { i: "🚰", n: "Ingestion Eng", m: "Waiting on the source API credentials from Security. Could take 2-3 days for approval. 🚧", w: 2200 },
+            { i: "⚙️", n: "Transform Eng", m: "Ah, I am completely blocked then. I can't build any dbt staging models without sample data to write logic against.", w: 2500 },
+            { i: "📊", n: "Vis Analyst", m: "And I can't build the Superset dashboard without your marts. Total sequential bottleneck. ⏳ We are losing days.", w: 3000 },
+            { i: "👨‍💻", n: "Platform Lead", m: "Understood. The whole pipeline is stalled. Let's document this as a blocker and wait.", w: 2000 }
+        ];
+
+        const chat = document.getElementById('chat');
+        const typing = document.getElementById('typing');
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+
+        async function run() {
+            await wait(1000);
+            for(let s of sequence) {
+                typing.style.display = 'block';
+                await wait(s.w * 0.7); // Simulate typing time
+                
+                const msg = document.createElement('div');
+                msg.className = 'msg';
+                msg.innerHTML = `
+                    <div class="icon">${s.i}</div>
+                    <div>
+                        <div class="name">${s.n}</div>
+                        <div class="text">${s.m}</div>
+                    </div>
+                `;
+                chat.insertBefore(msg, typing);
+                typing.style.display = 'none';
+                
+                await wait(50);
+                msg.classList.add('visible');
+                await wait(700); 
+            }
+        }
+        run();
+    </script>
+</body>
+</html>

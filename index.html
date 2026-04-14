@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Data Platform Demo</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-primary: #f4f7f9;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fcfcfd;
+            --border-color: #e2e8f0;
+            --manual-color: #f59e0b;
+            --manual-glow: rgba(245, 158, 11, 0.2);
+            --ai-color: #29b5e8;
+            --ai-glow: rgba(41, 181, 232, 0.3);
+            --success: #10b981;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --border-radius: 1rem;
+        }
+
+        /* 
+         * SUPER RESPONSIVE FONT SIZE
+         */
+        html {
+            font-size: clamp(12px, min(1.1vw, 1.8vh), 32px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-display);
+        }
+
+        .text-gradient-manual {
+            background: linear-gradient(90deg, #b45309, var(--manual-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-ai {
+            background: linear-gradient(90deg, #1e40af, var(--ai-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Container & Navigation */
+        .slider-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2vh 4vw;
+        }
+
+        .section.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* UI Overlays */
+        #progress-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0.5rem;
+            background: #e2e8f0;
+            z-index: 10000;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--ai-color);
+            transition: width 0.3s ease, background 0.5s ease;
+        }
+
+        .nav-dots {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.8rem;
+            z-index: 10000;
+        }
+
+        .dot {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .dot.active {
+            background: var(--text-primary);
+            transform: scale(1.3);
+        }
+
+        /* Arrows */
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10000;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #prev-btn {
+            left: 2vw;
+        }
+
+        #next-btn {
+            right: 2vw;
+        }
+
+        .arrow:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .arrow:disabled {
+            opacity: 0.3;
+            cursor: default;
+            transform: translateY(-50%);
+            box-shadow: none;
+        }
+
+        /* Common Components */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.8rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn {
+            background: var(--ai-color);
+            border: none;
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 3rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 2rem;
+            box-shadow: 0 8px 20px var(--ai-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            background: #1a6ce7;
+            box-shadow: 0 12px 25px var(--ai-glow);
+        }
+
+        /* Making Titles POP */
+        .title {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.8rem;
+            text-align: center;
+            color: var(--text-primary);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 50rem;
+        }
+
+        /* Timeline Badge */
+        .timeline-badge {
+            position: absolute;
+            top: 3.5vh;
+            right: 4vw;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.5s ease 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+        }
+
+        .section.active .timeline-badge {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Layouts */
+        .two-col {
+            display: flex;
+            width: 100%;
+            max-width: 80rem;
+            gap: 4rem;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Enhanced Video Layouts */
+        .video-layout {
+            max-width: 95rem;
+            gap: 4vw;
+            margin: 0 auto;
+        }
+
+        .video-layout .col-text {
+            flex: 1;
+            min-width: 25rem;
+        }
+
+        .video-layout .col-video {
+            flex: 1.5;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #e2e8f0;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border: 2px solid #cbd5e1;
+        }
+
+        .video-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            border-radius: calc(var(--border-radius) - 2px);
+            top: 0;
+            left: 0;
+        }
+
+        /* Avatar styles */
+        .avatar-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            text-align: center;
+            width: 16rem;
+            background: var(--bg-card);
+            padding: 1.2rem;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+            position: absolute;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .avatar-img {
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 50%;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid var(--border-color);
+        }
+
+        /* Lucide icon auto-scaler inside avatar */
+        .avatar-img svg,
+        .avatar-img i {
+            width: 50%;
+            height: 50%;
+        }
+
+        .manual-theme .avatar-img {
+            border-color: var(--manual-color);
+            box-shadow: 0 0 15px var(--manual-glow);
+        }
+
+        .ai-theme .avatar-img {
+            border-color: var(--ai-color);
+            box-shadow: 0 0 15px var(--ai-glow);
+        }
+
+        .role-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text-primary);
+        }
+
+        .role-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Org diagram layout */
+        .org-layout {
+            position: relative;
+            width: 72rem;
+            height: 38rem;
+            /* Fixed boundaries to prevent Flexbox squish and overlap */
+            margin: 4.5rem auto 0;
+            flex-shrink: 0;
+        }
+
+        .diagram-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .svg-line {
+            stroke-width: 4px;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        .svg-line.manual-line {
+            stroke: var(--manual-color);
+        }
+
+        .svg-line.ai-line {
+            stroke: var(--ai-color);
+        }
+
+        /* Manual Sequential Animation */
+        .section.active .manual-line.l1 {
+            animation: drawLine 0.5s ease-out 1s forwards;
+        }
+
+        .section.active .sat-1 {
+            animation: slideUpFade 0.5s ease 1.5s forwards;
+        }
+
+        .section.active .manual-line.l2 {
+            animation: drawLine 0.5s ease-out 2.5s forwards;
+        }
+
+        .section.active .sat-2 {
+            animation: slideUpFade 0.5s ease 3s forwards;
+        }
+
+        .section.active .manual-line.l3 {
+            animation: drawLine 0.5s ease-out 4s forwards;
+        }
+
+        .section.active .sat-3 {
+            animation: slideUpFade 0.5s ease 4.5s forwards;
+        }
+
+        .section.active .manual-line.l4 {
+            animation: drawLine 0.5s ease-out 5.5s forwards;
+        }
+
+        .section.active .sat-4 {
+            animation: slideUpFade 0.5s ease 6s forwards;
+        }
+
+        .section.active .manual-line.l5 {
+            animation: drawLine 0.5s ease-out 7s forwards;
+        }
+
+        .section.active .sat-5 {
+            animation: slideUpFade 0.5s ease 7.5s forwards;
+        }
+
+        .section.active .center-node-manual {
+            animation: scaleIn 0.5s ease 0.5s forwards;
+        }
+
+        /* AI Parallel & Mesh Animation */
+        .section.active .ai-line {
+            animation: drawLine 0.6s ease-out 0.8s forwards;
+        }
+
+        .section.active .ai-sat {
+            animation: slideUpFade 0.5s ease 1.2s forwards;
+        }
+
+        .section.active .center-node-ai {
+            animation: scaleIn 0.5s ease 0.3s forwards;
+        }
+
+        .mesh-line {
+            stroke: var(--ai-color);
+            stroke-width: 2.5px;
+            stroke-dasharray: 10 10;
+            opacity: 0;
+        }
+
+        @keyframes fadeInMesh {
+            to {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes flowDash {
+            to {
+                stroke-dashoffset: -500;
+            }
+        }
+
+        .section.active .mesh-line {
+            animation: fadeInMesh 0.5s ease forwards 1.8s, flowDash 15s linear infinite 1.8s;
+        }
+
+        /* Specific Sections */
+        #s1-hero .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 15% 50%, rgba(41, 181, 232, 0.08), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(26, 108, 231, 0.06), transparent 40%);
+            z-index: -1;
+        }
+
+        .hero-title {
+            font-size: 5.5rem;
+            font-weight: 800;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            line-height: 1.1;
+            letter-spacing: -2px;
+        }
+
+        .section.active .hero-title {
+            animation: slideUpFadeSimple 1s ease forwards;
+        }
+
+        /* Section 2: Request */
+        .chat-bubble {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            padding: 2rem;
+            border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0;
+            max-width: 30rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateX(-50px);
+            font-size: 1.3rem;
+            font-weight: 500;
+            font-style: italic;
+            color: #1e293b;
+        }
+
+        .section.active .chat-bubble {
+            animation: slideRightFade 0.6s ease 0.5s forwards;
+        }
+
+        /* Task Lists */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .task-item {
+            background: #ffffff;
+            border-left: 5px solid var(--manual-color);
+            padding: 1.2rem;
+            border-radius: 0 8px 8px 0;
+            opacity: 0;
+            transform: translateX(30px);
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: #334155;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .manual-list .task-item {
+            border-color: var(--manual-color);
+        }
+
+        .ai-list .task-item {
+            border-color: var(--ai-color);
+        }
+
+        .section.active .manual-list .task-item:nth-child(1) {
+            animation: slideLeftFade 0.5s ease 0.5s forwards;
+        }
+
+        .section.active .manual-list .task-item:nth-child(2) {
+            animation: slideLeftFade 0.5s ease 1.5s forwards;
+        }
+
+        .section.active .manual-list .task-item:nth-child(3) {
+            animation: slideLeftFade 0.5s ease 2.5s forwards;
+        }
+
+        .section.active .manual-list .task-item:nth-child(4) {
+            animation: slideLeftFade 0.5s ease 3.5s forwards;
+        }
+
+        .section.active .manual-list .task-item:nth-child(5) {
+            animation: slideLeftFade 0.5s ease 4.5s forwards;
+        }
+
+        .section.active .ai-list .task-item {
+            animation: slideLeftFade 0.4s ease 0.8s forwards;
+            transform: translateX(20px);
+        }
+
+        /* Animations */
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0) translate(-50%, -50%);
+            }
+        }
+
+        @keyframes slideUpFadeSimple {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideRightFade {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideLeftFade {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 10px var(--ai-glow);
+            }
+
+            50% {
+                box-shadow: 0 0 40px var(--ai-color);
+            }
+
+            100% {
+                box-shadow: 0 0 10px var(--ai-glow);
+            }
+        }
+
+        @keyframes fillBar {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Progress bars */
+        .progress-list {
+            width: 100%;
+            max-width: 50rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .prog-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .prog-label {
+            width: 14rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: right;
+            color: var(--text-primary);
+        }
+
+        .prog-track {
+            flex: 1;
+            height: 1.2rem;
+            background: #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .prog-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 1rem;
+        }
+
+        .manual-fill {
+            background: var(--manual-color);
+        }
+
+        .ai-fill {
+            background: var(--ai-color);
+        }
+
+        .section.active #s5-prog .prog-item:nth-child(1) .prog-fill {
+            animation: fillBar 1s linear 0.5s forwards;
+        }
+
+        .section.active #s5-prog .prog-item:nth-child(2) .prog-fill {
+            animation: fillBar 1s linear 1.5s forwards;
+        }
+
+        .section.active #s5-prog .prog-item:nth-child(3) .prog-fill {
+            animation: fillBar 1s linear 2.5s forwards;
+        }
+
+        .section.active #s5-prog .prog-item:nth-child(4) .prog-fill {
+            animation: fillBar 1s linear 3.5s forwards;
+        }
+
+        .section.active #s5-prog .prog-item:nth-child(5) .prog-fill {
+            animation: fillBar 1s linear 4.5s forwards;
+        }
+
+        .section.active #s10-prog .prog-fill {
+            animation: fillBar 2.5s ease-out 0.8s forwards;
+        }
+
+        /* Comparison table */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            max-width: 75rem;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .comp-header {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .comp-header.manual {
+            color: var(--manual-color);
+        }
+
+        .comp-header.ai {
+            color: var(--ai-color);
+        }
+
+        .comp-metric {
+            color: var(--text-secondary);
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .comp-val {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        .comp-val.manual-val {
+            border-bottom: 5px solid var(--manual-color);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .comp-val.ai-val {
+            border-bottom: 5px solid var(--ai-color);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .section.active .compare-grid .comp-val {
+            animation: slideUpFadeSimple 0.6s ease 0.5s forwards;
+        }
+
+        .big-stat {
+            font-size: 6rem;
+            font-family: var(--font-display);
+            font-weight: 800;
+            line-height: 1;
+            margin: 1rem 0 3rem;
+        }
+
+        .avatar-card-inline {
+            display: flex;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            align-items: center;
+            gap: 1.2rem;
+            background: #ffffff;
+            padding: 1.2rem;
+            border-radius: var(--border-radius);
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .icon-lg {
+            width: 4rem;
+            height: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Overlays -->
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+    <button class="arrow" id="prev-btn" title="Previous section (Left Arrow)"><i
+            data-lucide="chevron-left"></i></button>
+    <button class="arrow" id="next-btn" title="Next section (Right Arrow, Space)"><i
+            data-lucide="chevron-right"></i></button>
+    <div class="nav-dots" id="dots-container"></div>
+
+    <div class="slider-container">
+
+        <!-- 1. Hero Section -->
+        <section class="section active" id="sec-1" data-theme="ai">
+            <div id="s1-hero">
+                <div class="hero-bg"></div>
+            </div>
+            <h1 class="hero-title">Agentic AI for<br><span class="text-gradient-ai">Enterprise Data Platforms</span>
+            </h1>
+            <p class="subtitle" style="margin-top: 1.5rem; font-size: 1.8rem;">The Next Era of Data Engineering</p>
+            <button class="btn" style="display:flex; align-items:center; gap:0.5rem;" onclick="nextSection()">Start Demo
+                <i data-lucide="arrow-right"></i></button>
+        </section>
+
+        <!-- 2. The Request -->
+        <section class="section" id="sec-2" data-theme="manual">
+            <h2 class="title" style="animation: slideUpFadeSimple 1s ease forwards">Business Request</h2>
+            <div class="two-col" style="justify-content: center; margin-top: 4rem;">
+                <div class="col" style="display:flex; justify-content:flex-end; flex: 0.5;">
+                    <div class="avatar-card manual-theme" style="position:relative; transform:none; opacity:1;">
+                        <div class="avatar-img"><i data-lucide="briefcase"></i></div>
+                        <div class="role-title">Business Manager</div>
+                    </div>
+                </div>
+                <div class="col" style="flex: 1;">
+                    <div class="chat-bubble">
+                        "I need a dashboard tracking revenue by region, and monthly trend statistics for quarterly
+                        planning."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Manual Analysis -->
+        <section class="section" id="sec-3" data-theme="manual">
+            <div class="timeline-badge" style="color: var(--manual-color);"><i data-lucide="calendar"
+                    style="width:1.2rem; height:1.2rem;"></i> Days 1-2</div>
+            <h2 class="title" style="margin-bottom:0; animation: slideUpFadeSimple 1s ease forwards">Receipt & Analysis
+            </h2>
+            <p class="subtitle text-gradient-manual" style="animation: slideUpFadeSimple 1s ease forwards">(Manual
+                Workflow)</p>
+
+            <div class="two-col video-layout" style="margin-top:1rem">
+                <div class="col col-text manual-list">
+                    <div class="avatar-card-inline manual-theme">
+                        <div class="avatar-img" style="width:5rem; height:5rem;"><i data-lucide="laptop"></i></div>
+                        <div style="text-align:left">
+                            <div class="role-title" style="font-size: 1.2rem;">Data Platform Lead</div>
+                            <div class="role-desc">Primary contact. Analyzes requirement.</div>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">1. Discover CRM/ERP source data</div>
+                        <div class="task-item">2. Ingest source data into Data Lake</div>
+                        <div class="task-item">3. Transform to Data Vault & Marts</div>
+                        <div class="task-item">4. Create actionable BI Dashboard</div>
+                        <div class="task-item">5. Update Data Catalog & Lineage</div>
+                    </div>
+                </div>
+                <div class="col col-video">
+                    <div class="video-placeholder">
+                        <img src="videos/jira_manual_workflow_1776162259271.webp" alt="Lead creating tasks in Jira">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Manual Assignment -->
+        <section class="section" id="sec-4" data-theme="manual">
+            <div class="timeline-badge" style="color: var(--manual-color);"><i data-lucide="calendar"
+                    style="width:1.2rem; height:1.2rem;"></i> Days 2-3</div>
+            <h2 class="title" style="animation: slideUpFadeSimple 1s ease forwards">Task Assignment</h2>
+            <p class="subtitle" style="animation: slideUpFadeSimple 1s ease forwards; margin-bottom: 0;">Assigning tasks
+                sequentially to specialized experts.</p>
+
+            <div class="org-layout">
+                <!-- SVG dynamically scales via 100% width/height -->
+                <svg class="diagram-lines" style="width: 100%; height: 100%;">
+                    <line x1="50%" y1="50%" x2="16%" y2="20%" class="svg-line manual-line l1" />
+                    <line x1="50%" y1="50%" x2="50%" y2="8%" class="svg-line manual-line l2" />
+                    <line x1="50%" y1="50%" x2="84%" y2="20%" class="svg-line manual-line l3" />
+                    <line x1="50%" y1="50%" x2="84%" y2="82%" class="svg-line manual-line l4" />
+                    <line x1="50%" y1="50%" x2="16%" y2="82%" class="svg-line manual-line l5" />
+                </svg>
+
+                <div class="avatar-card manual-theme center-node-manual"
+                    style="left:50%; top:50%; opacity:0; z-index:10; padding:1.5rem; width:18rem;">
+                    <div class="avatar-img" style="width:5.5rem; height:5.5rem;"><i data-lucide="laptop"></i></div>
+                    <div class="role-title" style="font-size: 1.3rem;">Platform Lead</div>
+                </div>
+
+                <div class="avatar-card manual-theme sat-1" style="left:16%; top:20%;">
+                    <div class="avatar-img"><i data-lucide="search-code"></i></div>
+                    <div class="role-title">Data Profiling Specialist</div>
+                    <div class="role-desc">Expert in discovering source data.</div>
+                </div>
+
+                <div class="avatar-card manual-theme sat-2" style="left:50%; top:8%;">
+                    <div class="avatar-img"><i data-lucide="database"></i></div>
+                    <div class="role-title">Data Ingestion Engineer</div>
+                    <div class="role-desc">Operates pipelines to landing zone.</div>
+                </div>
+
+                <div class="avatar-card manual-theme sat-3" style="left:84%; top:20%;">
+                    <div class="avatar-img"><i data-lucide="blocks"></i></div>
+                    <div class="role-title">Data Transformation Eng.</div>
+                    <div class="role-desc">Transforms to Data Vault and Marts.</div>
+                </div>
+
+                <div class="avatar-card manual-theme sat-4" style="left:84%; top:82%;">
+                    <div class="avatar-img"><i data-lucide="bar-chart-big"></i></div>
+                    <div class="role-title">Visualization Analyst</div>
+                    <div class="role-desc">Builds dashboards for end users.</div>
+                </div>
+
+                <div class="avatar-card manual-theme sat-5" style="left:16%; top:82%;">
+                    <div class="avatar-img"><i data-lucide="shield-check"></i></div>
+                    <div class="role-title">Data Governance Spec.</div>
+                    <div class="role-desc">Ensures lineage and compliance.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Manual Execution -->
+        <section class="section" id="sec-5" data-theme="manual">
+            <div class="timeline-badge" style="color: var(--manual-color);"><i data-lucide="calendar"
+                    style="width:1.2rem; height:1.2rem;"></i> Days 3-14</div>
+            <h2 class="title" style="margin-bottom:0; animation: slideUpFadeSimple 1s ease forwards">Execution</h2>
+            <p class="subtitle text-gradient-manual" style="animation: slideUpFadeSimple 1s ease forwards">(Sequential
+                Bottlenecks)</p>
+
+            <div class="two-col video-layout" style="align-items:flex-start; margin-top:2rem;">
+                <div class="col col-text">
+                    <div class="progress-list" id="s5-prog">
+                        <div class="prog-item">
+                            <div class="prog-label">Data Profiler</div>
+                            <div class="prog-track">
+                                <div class="prog-fill manual-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Ingestion Engineer</div>
+                            <div class="prog-track">
+                                <div class="prog-fill manual-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Transformation Eng.</div>
+                            <div class="prog-track">
+                                <div class="prog-fill manual-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Visualization Analyst</div>
+                            <div class="prog-track">
+                                <div class="prog-fill manual-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Governance Spec.</div>
+                            <div class="prog-track">
+                                <div class="prog-fill manual-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-video">
+                    <div class="video-placeholder">
+                        <img src="videos/chat_bottleneck_workflow_1776162315636.webp" alt="Waiting times and handoffs">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Manual Pain Points -->
+        <section class="section" id="sec-6" data-theme="manual">
+            <h2 class="title text-gradient-manual" style="animation: slideUpFadeSimple 1s ease forwards">Manual Workflow
+                Results</h2>
+            <div class="big-stat text-gradient-manual" style="animation: slideUpFadeSimple 1s ease forwards">~14 Days
+            </div>
+
+            <div
+                style="display:flex; gap:3rem; flex-wrap:wrap; justify-content:center; max-width:90rem; margin-top:2rem;">
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 0.5s forwards; opacity:0">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i data-lucide="hourglass"
+                            class="icon-lg" style="color:var(--manual-color);"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Bottleneck Effect</h3>
+                    <p class="role-desc">Steps cannot start until previous ones are completely finished, dragging delay.
+                    </p>
+                </div>
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 0.8s forwards; opacity:0">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i
+                            data-lucide="message-square" class="icon-lg" style="color:var(--manual-color);"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Lost Context</h3>
+                    <p class="role-desc">Business intent gets misinterpreted during handoffs between technical roles.
+                    </p>
+                </div>
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 1.1s forwards; opacity:0">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i
+                            data-lucide="alert-circle" class="icon-lg" style="color:#ef4444;"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Error & Rework</h3>
+                    <p class="role-desc">Errors discovered at reporting force painful restarts from the beginning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Transition -->
+        <section class="section" id="sec-7" data-theme="ai">
+            <h2 class="hero-title" style="font-size:5rem; font-weight:500; color:var(--text-secondary)">
+                What if <br>
+                <span class="text-gradient-ai" style="font-weight:800; font-size:8rem; line-height:1.2;">AI</span> <br>
+                directly orchestrated this?
+            </h2>
+        </section>
+
+        <!-- 8. AI Analysis -->
+        <section class="section" id="sec-8" data-theme="ai">
+            <div class="timeline-badge" style="color: var(--ai-color);"><i data-lucide="timer"
+                    style="width:1.2rem; height:1.2rem;"></i> Mins 1-5</div>
+            <h2 class="title text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">Instant Analysis
+            </h2>
+            <p class="subtitle text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">(Agentic AI
+                Workflow)</p>
+
+            <div class="two-col video-layout" style="margin-top:1rem">
+                <div class="col col-text ai-list">
+                    <div class="avatar-card-inline ai-theme">
+                        <div class="avatar-img" style="width:5rem; height:5rem; animation:pulseGlow 2s infinite;"><i
+                                data-lucide="bot"></i></div>
+                        <div style="text-align:left">
+                            <div class="role-title" style="font-size: 1.2rem;">AI Platform Orchestrator</div>
+                            <div class="role-desc">Atomizes logic into specialized tasks instantly.</div>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">1. Profiling [Source: ERP/Sales]</div>
+                        <div class="task-item">2. Ingest [Target: Raw Landing]</div>
+                        <div class="task-item">3. Transform [dbt generated]</div>
+                        <div class="task-item">4. Report [Superset metrics]</div>
+                        <div class="task-item">5. Lineage [Push to DataHub]</div>
+                    </div>
+                </div>
+                <div class="col col-video">
+                    <div class="video-placeholder"
+                        style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow);">
+                        <div class="video-empty-state">
+                            <span class="play-icon" style="margin-bottom:1rem; display:flex; justify-content:center;"><i
+                                    data-lucide="play-circle" class="icon-lg" style="color:var(--ai-color);"></i></span>
+                            <p style="font-size:1.2rem; font-weight:600;">Clip: AI agent auto-generating plan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. AI Dispatch -->
+        <section class="section" id="sec-9" data-theme="ai">
+            <div class="timeline-badge" style="color: var(--ai-color);"><i data-lucide="timer"
+                    style="width:1.2rem; height:1.2rem;"></i> Min 5</div>
+            <h2 class="title text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">Parallel Dispatch
+            </h2>
+            <p class="subtitle" style="animation: slideUpFadeSimple 1s ease forwards; margin-bottom: 0;">The
+                Orchestrator instantly activates ALL specialized sub-agents,<br>creating a real-time autonomous neural
+                network.</p>
+
+            <div class="org-layout">
+                <svg class="diagram-lines" style="width: 100%; height: 100%;">
+                    <!-- Inter-agent horizontal communication mesh -->
+                    <line x1="16%" y1="20%" x2="50%" y2="8%" class="mesh-line" />
+                    <line x1="50%" y1="8%" x2="84%" y2="20%" class="mesh-line" />
+                    <line x1="84%" y1="20%" x2="84%" y2="82%" class="mesh-line" />
+                    <line x1="84%" y1="82%" x2="16%" y2="82%" class="mesh-line" />
+                    <line x1="16%" y1="82%" x2="16%" y2="20%" class="mesh-line" />
+
+                    <!-- Main orchestrator lines -->
+                    <line x1="50%" y1="50%" x2="16%" y2="20%" class="svg-line ai-line" />
+                    <line x1="50%" y1="50%" x2="50%" y2="8%" class="svg-line ai-line" />
+                    <line x1="50%" y1="50%" x2="84%" y2="20%" class="svg-line ai-line" />
+                    <line x1="50%" y1="50%" x2="84%" y2="82%" class="svg-line ai-line" />
+                    <line x1="50%" y1="50%" x2="16%" y2="82%" class="svg-line ai-line" />
+                </svg>
+
+                <div class="avatar-card ai-theme center-node-ai"
+                    style="left:50%; top:50%; opacity:0; z-index:10; padding:1.5rem; width:18rem;">
+                    <div class="avatar-img" style="width:5.5rem; height:5.5rem; animation:pulseGlow 1s infinite;"><i
+                            data-lucide="bot"></i></div>
+                    <div class="role-title" style="font-size:1.3rem;">Orchestrator</div>
+                </div>
+
+                <div class="avatar-card ai-theme ai-sat" style="left:16%; top:20%;">
+                    <div class="avatar-img"><i data-lucide="search-code"></i></div>
+                    <div class="role-title">Agent: Profiler</div>
+                    <div class="role-desc">Generates source data schema.</div>
+                </div>
+
+                <div class="avatar-card ai-theme ai-sat" style="left:50%; top:8%;">
+                    <div class="avatar-img"><i data-lucide="database"></i></div>
+                    <div class="role-title">Agent: Ingestion</div>
+                    <div class="role-desc">Builds ingestion DAGs.</div>
+                </div>
+
+                <div class="avatar-card ai-theme ai-sat" style="left:84%; top:20%;">
+                    <div class="avatar-img"><i data-lucide="blocks"></i></div>
+                    <div class="role-title">Agent: Transform</div>
+                    <div class="role-desc">Generates dbt models safely.</div>
+                </div>
+
+                <div class="avatar-card ai-theme ai-sat" style="left:84%; top:82%;">
+                    <div class="avatar-img"><i data-lucide="bar-chart-big"></i></div>
+                    <div class="role-title">Agent: Visualization</div>
+                    <div class="role-desc">Creates raw Superset JSON.</div>
+                </div>
+
+                <div class="avatar-card ai-theme ai-sat" style="left:16%; top:82%;">
+                    <div class="avatar-img"><i data-lucide="shield-check"></i></div>
+                    <div class="role-title">Agent: Governance</div>
+                    <div class="role-desc">Validates data lineage & rules.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. AI Execution -->
+        <section class="section" id="sec-10" data-theme="ai">
+            <div class="timeline-badge" style="color: var(--ai-color);"><i data-lucide="timer"
+                    style="width:1.2rem; height:1.2rem;"></i> Min 10 - Hour 4</div>
+            <h2 class="title" style="margin-bottom:0; animation: slideUpFadeSimple 1s ease forwards">Execution</h2>
+            <p class="subtitle text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">(Parallel &
+                Coordinated)</p>
+
+            <div class="two-col video-layout" style="align-items:flex-start; margin-top:2rem;">
+                <div class="col col-text">
+                    <div class="progress-list" id="s10-prog">
+                        <!-- All bars fill at once -->
+                        <div class="prog-item">
+                            <div class="prog-label">Agent: Profiler</div>
+                            <div class="prog-track">
+                                <div class="prog-fill ai-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Agent: Ingestion</div>
+                            <div class="prog-track">
+                                <div class="prog-fill ai-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Agent: Transformation</div>
+                            <div class="prog-track">
+                                <div class="prog-fill ai-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Agent: Visualization</div>
+                            <div class="prog-track">
+                                <div class="prog-fill ai-fill"></div>
+                            </div>
+                        </div>
+                        <div class="prog-item">
+                            <div class="prog-label">Agent: Governance</div>
+                            <div class="prog-track">
+                                <div class="prog-fill ai-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-video">
+                    <div class="video-placeholder"
+                        style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow);">
+                        <div class="video-empty-state">
+                            <span class="play-icon" style="margin-bottom:1rem; display:flex; justify-content:center;"><i
+                                    data-lucide="play-circle" class="icon-lg" style="color:var(--ai-color);"></i></span>
+                            <p style="font-size:1.2rem; font-weight:600;">Clip: AI agents building code in IDE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. AI Results -->
+        <section class="section" id="sec-11" data-theme="ai">
+            <h2 class="title text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">Agentic Flow
+                Results</h2>
+            <div class="big-stat text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">~4 Hours</div>
+
+            <div
+                style="display:flex; gap:3rem; flex-wrap:wrap; justify-content:center; max-width:90rem; margin-top:2rem;">
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 0.5s forwards; opacity:0; border-color:#e2e8f0;">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i data-lucide="zap"
+                            class="icon-lg" style="color:var(--success);"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Parallelism</h3>
+                    <p class="role-desc">Agents automatically mock data allowing dependent modules to be built safely.
+                    </p>
+                </div>
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 0.8s forwards; opacity:0; border-color:#e2e8f0;">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i data-lucide="bot"
+                            class="icon-lg" style="color:var(--success);"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Zero Overhead</h3>
+                    <p class="role-desc">Machine-to-machine sync via structured payloads ensures no missed context.</p>
+                </div>
+                <div class="card"
+                    style="flex:1; max-width: 25rem; text-align:center; animation: slideUpFadeSimple 0.6s ease 1.1s forwards; opacity:0; border-color:#e2e8f0;">
+                    <div style="margin-bottom:1.5rem; display:flex; justify-content:center;"><i
+                            data-lucide="check-circle-2" class="icon-lg" style="color:var(--success);"></i></div>
+                    <h3 style="margin-bottom:1rem; font-size:1.5rem;">Auto Checklist</h3>
+                    <p class="role-desc">Self-correcting feedback loops spot syntax or logic errors immediately.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 12. Comparison -->
+        <section class="section" id="sec-12" data-theme="ai">
+            <h2 class="title" style="animation: slideUpFadeSimple 1s ease forwards">Efficiency Evaluation</h2>
+
+            <div class="compare-grid" style="margin-top:4rem;">
+                <div></div>
+                <div class="comp-header manual">Traditional Team</div>
+                <div class="comp-header ai">Agentic AI Team</div>
+
+                <div class="comp-metric">Time-to-market</div>
+                <div class="comp-val manual-val" style="color:var(--text-secondary)">~14 Days</div>
+                <div class="comp-val ai-val" style="color:var(--ai-color)">~4 Hours</div>
+
+                <div class="comp-metric">Resource Costs</div>
+                <div class="comp-val manual-val" style="color:var(--text-secondary)">5 Deep Experts</div>
+                <div class="comp-val ai-val" style="color:var(--ai-color)">1 Human + Sub-Agents</div>
+
+                <div class="comp-metric">Scaling Capability</div>
+                <div class="comp-val manual-val" style="color:var(--text-secondary)">Strictly Linear</div>
+                <div class="comp-val ai-val" style="color:var(--ai-color)">Exponential</div>
+
+                <div class="comp-metric">Documentation</div>
+                <div class="comp-val manual-val" style="color:#d97706">Often Outdated</div>
+                <div class="comp-val ai-val" style="color:var(--ai-color)">Auto-generated</div>
+            </div>
+        </section>
+
+        <!-- 13. Conclusion -->
+        <section class="section" id="sec-13" data-theme="ai">
+            <div class="avatar-card ai-theme"
+                style="margin-bottom:1rem; width:12rem; position:relative; transform:none; opacity:1; border:none; background:transparent; box-shadow:none; animation: slideUpFadeSimple 1s ease forwards">
+                <div class="avatar-img" style="width:9rem; height:9rem; box-shadow: 0 0 50px var(--ai-glow);"><i
+                        data-lucide="brain-circuit" style="color:var(--ai-color)"></i></div>
+            </div>
+            <h2 class="title text-gradient-ai"
+                style="margin-bottom:3rem; font-size:4.5rem; animation: slideUpFadeSimple 1s ease forwards">The Future
+                of Data Engineering</h2>
+            <div class="card"
+                style="max-width:65rem; margin: 0 auto; text-align:left; padding: 4rem 5rem; font-size:1.4rem; font-weight:500; animation: slideUpFadeSimple 1s ease 0.5s forwards; opacity:0; border: 2px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+                <p style="margin-bottom:2rem; display:flex; gap:1.5rem; align-items:center;">
+                    <i data-lucide="arrow-right"
+                        style="width:2.5rem; height:2.5rem; color:var(--ai-color); flex-shrink:0;"></i>
+                    <span>Data Leaders shift from micro-managing tasks to providing strategic direction.</span>
+                </p>
+                <p style="margin-bottom:2rem; display:flex; gap:1.5rem; align-items:center;">
+                    <i data-lucide="arrow-right"
+                        style="width:2.5rem; height:2.5rem; color:var(--ai-color); flex-shrink:0;"></i>
+                    <span>Time from business idea to production delivery shrinks from months to hours.</span>
+                </p>
+                <p style="display:flex; gap:1.5rem; align-items:center;">
+                    <i data-lucide="arrow-right"
+                        style="width:2.5rem; height:2.5rem; color:var(--ai-color); flex-shrink:0;"></i>
+                    <span>Code quality and accurate documentation are strictly guaranteed by constraints.</span>
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JavaScript block -->
+    <script>
+        const totalSections = 13;
+        let currentSection = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initDots();
+            updateUI();
+
+            // Events
+            document.getElementById('prev-btn').addEventListener('click', prevSection);
+            document.getElementById('next-btn').addEventListener('click', nextSection);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    nextSection();
+                    e.preventDefault();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSection();
+                }
+            });
+        });
+
+        function nextSection() { if (currentSection < totalSections) goToSection(currentSection + 1); }
+        function prevSection() { if (currentSection > 1) goToSection(currentSection - 1); }
+
+        function goToSection(index) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(`sec-${index}`);
+            // Force browser repaint to restart CSS animations reliably
+            void target.offsetWidth;
+            target.classList.add('active');
+
+            currentSection = index;
+            updateUI();
+
+            const theme = target.getAttribute('data-theme');
+            const pBar = document.getElementById('progress-bar');
+            if (theme === 'manual') pBar.style.background = 'var(--manual-color)';
+            else if (theme === 'ai') pBar.style.background = 'var(--ai-color)';
+            else pBar.style.background = 'var(--text-secondary)';
+        }
+
+        function updateUI() {
+            const percent = ((currentSection - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                if (i === currentSection - 1) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+
+            document.getElementById('prev-btn').disabled = (currentSection === 1);
+            document.getElementById('next-btn').disabled = (currentSection === totalSections);
+        }
+
+        function initDots() {
+            const container = document.getElementById('dots-container');
+            for (let i = 1; i <= totalSections; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.addEventListener('click', () => goToSection(i));
+                container.appendChild(dot);
+            }
+        }
+    </script>
+</body>
+
+</html>

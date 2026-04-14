@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f4f5f7; display: flex; height: 100vh; overflow: hidden;}
+        .sidebar { width: 60px; background: #0747a6; }
+        .main { flex: 1; padding: 20px; display: flex; flex-direction: column;}
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ebecf0; padding-bottom: 10px; margin-bottom: 20px; }
+        .btn { background: #0052cc; color: white; border: none; padding: 8px 12px; border-radius: 3px; font-weight: bold; }
+        .modal { display: none; background: white; width: 450px; margin: 40px auto; padding: 20px; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .modal.active { display: block; }
+        input, select { width: 100%; box-sizing: border-box; padding: 8px; margin: 5px 0 20px; border: 2px solid #dfe1e6; border-radius: 3px; font-size: 14px;}
+        .board { display: flex; gap: 20px; margin-top: 10px; }
+        .column { background: #ebecf0; flex: 1; padding: 10px; border-radius: 3px; min-height: 400px; }
+        .task { background: white; padding: 10px; margin-bottom: 10px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 13px; font-weight: 500;}
+        /* Fake cursor on screen */
+        #mouse {
+            position: absolute; width: 15px; height: 20px; z-index: 9999;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="black" d="M7 2l12 11.2h-5.8l3.3 7.3-2.2.9-3.2-7.4-4.4 4.8z"/></svg>') no-repeat;
+            transition: left 0.5s ease-out, top 0.5s ease-out;
+            left: 200px; top: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="mouse"></div>
+    <div class="sidebar"></div>
+    <div class="main">
+        <div class="header">
+            <h2 id="proj-title" style="color:#172b4d">DataPlatform - Engineering Board</h2>
+            <button class="btn" id="create-btn">Create Issue</button>
+        </div>
+        <div class="modal" id="modal">
+            <h3 style="margin-top:0; color:#172b4d;">Create Issue</h3>
+            <label style="color:#5e6c84; font-size:12px; font-weight:bold;">Summary</label><input type="text" id="summary">
+            <label style="color:#5e6c84; font-size:12px; font-weight:bold;">Assignee</label><select id="assignee">
+                <option value="lead">Unassigned</option>
+                <option value="prof">Data Profiling Specialist</option>
+                <option value="ing">Data Ingestion Engineer</option>
+                <option value="trans">Data Transformation Engineer</option>
+            </select>
+            <div style="text-align: right;"><button class="btn" id="save-btn">Create</button></div>
+        </div>
+        <div class="board">
+            <div class="column" id="todo-col">
+                <h4 style="margin: 0 0 10px; color:#5e6c84;">TO DO</h4>
+            </div>
+            <div class="column"><h4 style="margin: 0 0 10px; color:#5e6c84;">IN PROGRESS</h4></div>
+            <div class="column"><h4 style="margin: 0 0 10px; color:#5e6c84;">DONE</h4></div>
+        </div>
+    </div>
+    <script>
+        const tasks = [
+            { t: "Step 1: Profile source data tables", r: "prof" },
+            { t: "Step 2: Build Airflow pipelines for ingestion", r: "ing" },
+            { t: "Step 3: Transform staging into Data Vault", r: "trans" }
+        ];
+
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+        const moveMouse = async (el) => {
+            const rect = el.getBoundingClientRect();
+            const mouse = document.getElementById('mouse');
+            mouse.style.left = (rect.left + rect.width/2) + 'px';
+            mouse.style.top = (rect.top + rect.height/2) + 'px';
+            await wait(600); // travel time
+        };
+
+        const typeText = async (el, text) => {
+            el.focus();
+            let current = "";
+            for (let char of text) {
+                current += char;
+                el.value = current;
+                await wait(20 + Math.random() * 40); // very fast typing
+            }
+            await wait(200);
+        };
+
+        async function run() {
+            await wait(1000);
+            for(let task of tasks) {
+                const createBtn = document.getElementById('create-btn');
+                await moveMouse(createBtn);
+                document.getElementById('modal').classList.add('active');
+                await wait(400);
+
+                const sumInput = document.getElementById('summary');
+                await moveMouse(sumInput);
+                await typeText(sumInput, task.t);
+
+                const sel = document.getElementById('assignee');
+                await moveMouse(sel);
+                sel.value = task.r;
+                await wait(200);
+
+                const saveBtn = document.getElementById('save-btn');
+                await moveMouse(saveBtn);
+                document.getElementById('todo-col').innerHTML += `<div class="task">${task.t}</div>`;
+                document.getElementById('modal').classList.remove('active');
+                document.getElementById('summary').value = "";
+                sel.value = "lead";
+                await wait(500);
+            }
+            await wait(2000);
+        }
+        run();
+    </script>
+</body>
+</html>
