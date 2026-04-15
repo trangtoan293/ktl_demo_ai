@@ -894,7 +894,8 @@
                 </div>
                 <div class="col col-video">
                     <div class="video-placeholder">
-                        <img src="videos/jira_manual_workflow_1776162259271.webp" alt="Lead creating tasks in Jira">
+                        <img src="" data-src="videos/jira_manual_workflow_1776162259271.webp" alt="Lead creating tasks in Jira" style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);">
+                        <canvas style="display:none; width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px); position:absolute; top:0; left:0;"></canvas>
                     </div>
                 </div>
             </div>
@@ -1001,7 +1002,8 @@
                 </div>
                 <div class="col col-video">
                     <div class="video-placeholder">
-                        <img src="videos/chat_bottleneck_workflow_1776162315636.webp" alt="Waiting times and handoffs">
+                        <img src="" data-src="videos/chat_bottleneck_workflow_1776162315636.webp" alt="Waiting times and handoffs" style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);">
+                        <canvas style="display:none; width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px); position:absolute; top:0; left:0;"></canvas>
                     </div>
                 </div>
             </div>
@@ -1081,7 +1083,7 @@
                 <div class="col col-video">
                     <div class="video-placeholder"
                         style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow);">
-                        <video src="videos/assign_task_2.mp4" autoplay muted
+                        <video src="videos/assign_task_2.mp4" muted playsinline
                             style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);"></video>
                     </div>
                 </div>
@@ -1201,7 +1203,7 @@
                 <div class="col col-video">
                     <div class="video-placeholder"
                         style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow);">
-                        <video src="videos/exec_task_2.mp4" autoplay muted
+                        <video src="videos/exec_task_2.mp4" muted playsinline
                             style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);"></video>
                     </div>
                 </div>
@@ -1305,6 +1307,11 @@
     <script>
         const totalSections = 13;
         let currentSection = 1;
+        const webpDurations = {
+            'videos/jira_manual_workflow_1776162259271.webp': 15400,
+            'videos/chat_bottleneck_workflow_1776162315636.webp': 16300,
+        };
+        let webpTimers = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
@@ -1329,11 +1336,48 @@
         function prevSection() { if (currentSection > 1) goToSection(currentSection - 1); }
 
         function goToSection(index) {
+            // Pause & reset all videos
+            document.querySelectorAll('.section video').forEach(v => {
+                v.pause();
+                v.currentTime = 0;
+            });
+            // Stop animated WebP & clear pending timers
+            webpTimers.forEach(t => clearTimeout(t));
+            webpTimers = [];
+            document.querySelectorAll('.section img[data-src]').forEach(img => {
+                img.src = '';
+            });
+
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(`sec-${index}`);
             // Force browser repaint to restart CSS animations reliably
             void target.offsetWidth;
             target.classList.add('active');
+
+            // Play video in the new section (if any)
+            const vid = target.querySelector('video');
+            if (vid) vid.play();
+
+            // Restart animated WebP, freeze on last frame after 1 play
+            target.querySelectorAll('img[data-src]').forEach(img => {
+                const canvas = img.nextElementSibling;
+                if (canvas && canvas.tagName === 'CANVAS') canvas.style.display = 'none';
+                img.style.display = '';
+                img.src = img.dataset.src;
+                const duration = webpDurations[img.dataset.src];
+                if (duration) {
+                    const t = setTimeout(() => {
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        img.src = '';
+                        img.style.display = 'none';
+                        canvas.style.display = '';
+                    }, duration);
+                    webpTimers.push(t);
+                }
+            });
 
             currentSection = index;
             updateUI();
