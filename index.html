@@ -283,7 +283,7 @@
         }
 
         .video-layout .col-video {
-            flex: 1.5;
+            flex: 1.86;
         }
 
         .video-placeholder {
@@ -380,6 +380,14 @@
             /* Fixed boundaries to prevent Flexbox squish and overlap */
             margin: 4.5rem auto 0;
             flex-shrink: 0;
+        }
+
+        #sec-9 .org-layout {
+            width: 100%;
+            height: 100%;
+            min-height: 26rem;
+            margin: 0;
+            flex-shrink: 1;
         }
 
         .diagram-lines {
@@ -975,35 +983,81 @@
 
             <div class="two-col video-layout" style="align-items:flex-start; margin-top:2rem;">
                 <div class="col col-text">
-                    <div class="progress-list" id="s5-prog">
-                        <div class="prog-item">
-                            <div class="prog-label">Data Profiler</div>
-                            <div class="prog-track">
-                                <div class="prog-fill manual-fill"></div>
+                    <div style="display:flex; flex-direction:column; gap:0.7rem; width:100%;">
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(234,88,12,0.08); border:1px solid rgba(234,88,12,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(234,88,12,0.12); display:flex; align-items:center; justify-content:center; color:var(--manual-color); flex-shrink:0;">
+                                <i data-lucide="search-code" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Data Profiler</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Analyzing source data structure</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--manual-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--manual-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Ingestion Engineer</div>
-                            <div class="prog-track">
-                                <div class="prog-fill manual-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(234,88,12,0.08); border:1px solid rgba(234,88,12,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(234,88,12,0.12); display:flex; align-items:center; justify-content:center; color:var(--manual-color); flex-shrink:0;">
+                                <i data-lucide="database" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Ingestion Engineer</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Waiting for API credentials</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:#ef4444;">
+                                <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;"></span>Blocked
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Transformation Eng.</div>
-                            <div class="prog-track">
-                                <div class="prog-fill manual-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(234,88,12,0.05); border:1px solid rgba(234,88,12,0.15); border-radius:0.75rem; padding:0.9rem 1.2rem; opacity:0.7;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(234,88,12,0.08); display:flex; align-items:center; justify-content:center; color:var(--manual-color); flex-shrink:0;">
+                                <i data-lucide="blocks" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Transformation Eng.</div>
+                                <div style="font-size:0.82rem; color:#64748b;">No sample data to work with</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:#94a3b8;">
+                                <span style="width:7px;height:7px;border-radius:50%;background:#94a3b8;"></span>Waiting
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Visualization Analyst</div>
-                            <div class="prog-track">
-                                <div class="prog-fill manual-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(234,88,12,0.05); border:1px solid rgba(234,88,12,0.15); border-radius:0.75rem; padding:0.9rem 1.2rem; opacity:0.5;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(234,88,12,0.08); display:flex; align-items:center; justify-content:center; color:#94a3b8; flex-shrink:0;">
+                                <i data-lucide="bar-chart-big" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#64748b;">Visualization Analyst</div>
+                                <div style="font-size:0.82rem; color:#94a3b8;">Pending upstream tasks</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:#94a3b8;">
+                                <span style="width:7px;height:7px;border-radius:50%;background:#cbd5e1;"></span>Queued
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Governance Spec.</div>
-                            <div class="prog-track">
-                                <div class="prog-fill manual-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(234,88,12,0.05); border:1px solid rgba(234,88,12,0.15); border-radius:0.75rem; padding:0.9rem 1.2rem; opacity:0.5;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(234,88,12,0.08); display:flex; align-items:center; justify-content:center; color:#94a3b8; flex-shrink:0;">
+                                <i data-lucide="shield-check" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#64748b;">Governance Spec.</div>
+                                <div style="font-size:0.82rem; color:#94a3b8;">Pending upstream tasks</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:#94a3b8;">
+                                <span style="width:7px;height:7px;border-radius:50%;background:#cbd5e1;"></span>Queued
                             </div>
                         </div>
                     </div>
@@ -1105,64 +1159,77 @@
         <section class="section" id="sec-9" data-theme="ai">
             <div class="timeline-badge" style="color: var(--ai-color);"><i data-lucide="timer"
                     style="width:1.2rem; height:1.2rem;"></i> Min 5</div>
-            <h2 class="title text-gradient-ai" style="animation: slideUpFadeSimple 1s ease forwards">Parallel Dispatch
-            </h2>
-            <p class="subtitle" style="animation: slideUpFadeSimple 1s ease forwards; margin-bottom: 0;">The
-                Orchestrator instantly activates ALL specialized sub-agents,<br>creating a real-time autonomous neural
+            <h2 class="title text-gradient-ai"
+                style="animation: slideUpFadeSimple 1s ease forwards; margin-bottom:0.3rem;">Parallel Dispatch</h2>
+            <p class="subtitle"
+                style="animation: slideUpFadeSimple 1s ease forwards; margin-bottom: 0.5rem; font-size:1rem;">The
+                Orchestrator instantly activates ALL specialized sub-agents, creating a real-time autonomous neural
                 network.</p>
 
-            <div class="org-layout">
-                <svg class="diagram-lines" style="width: 100%; height: 100%;">
-                    <!-- Inter-agent horizontal communication mesh -->
-                    <!-- <line x1="16%" y1="20%" x2="50%" y2="8%" class="mesh-line" />
-                    <line x1="50%" y1="8%" x2="84%" y2="20%" class="mesh-line" />
-                    <line x1="84%" y1="20%" x2="84%" y2="82%" class="mesh-line" />
-                    <line x1="84%" y1="82%" x2="16%" y2="82%" class="mesh-line" />
-                    <line x1="16%" y1="82%" x2="16%" y2="20%" class="mesh-line" /> -->
+            <div style="display:flex; gap:2rem; align-items:center; width:100%; flex:1; min-height:0;">
+                <!-- Left: org diagram -->
+                <div style="position:relative; width:35%; height:100%; min-height:0; flex-shrink:0;">
+                    <div class="org-layout" style="width:100%; height:100%; margin:0; position:relative;">
+                        <svg class="diagram-lines" style="width: 100%; height: 100%;">
+                            <line x1="50%" y1="50%" x2="16%" y2="20%" class="mesh-line" />
+                            <line x1="50%" y1="50%" x2="50%" y2="8%" class="mesh-line" />
+                            <line x1="50%" y1="50%" x2="84%" y2="20%" class="mesh-line" />
+                            <line x1="50%" y1="50%" x2="84%" y2="82%" class="mesh-line" />
+                            <line x1="50%" y1="50%" x2="16%" y2="82%" class="mesh-line" />
+                        </svg>
 
-                    <!-- Main orchestrator lines -->
-                    <line x1="50%" y1="50%" x2="16%" y2="20%" class="mesh-line" />
-                    <line x1="50%" y1="50%" x2="50%" y2="8%" class="mesh-line" />
-                    <line x1="50%" y1="50%" x2="84%" y2="20%" class="mesh-line" />
-                    <line x1="50%" y1="50%" x2="84%" y2="82%" class="mesh-line" />
-                    <line x1="50%" y1="50%" x2="16%" y2="82%" class="mesh-line" />
-                </svg>
+                        <div class="avatar-card ai-theme center-node-ai"
+                            style="left:50%; top:50%; opacity:0; z-index:10; padding:0.8rem; width:11rem;">
+                            <div class="avatar-img"
+                                style="width:3.2rem; height:3.2rem; animation:pulseGlow 1s infinite;"><i
+                                    data-lucide="bot"></i></div>
+                            <div class="role-title" style="font-size:0.85rem;">Orchestrator</div>
+                        </div>
 
-                <div class="avatar-card ai-theme center-node-ai"
-                    style="left:50%; top:50%; opacity:0; z-index:10; padding:1.5rem; width:18rem;">
-                    <div class="avatar-img" style="width:5.5rem; height:5.5rem; animation:pulseGlow 1s infinite;"><i
-                            data-lucide="bot"></i></div>
-                    <div class="role-title" style="font-size:1.3rem;">Orchestrator</div>
+                        <div class="avatar-card ai-theme ai-sat" style="left:16%; top:20%; padding:0.6rem; width:9rem;">
+                            <div class="avatar-img" style="width:2.5rem; height:2.5rem;"><i
+                                    data-lucide="search-code"></i></div>
+                            <div class="role-title" style="font-size:0.75rem;">Agent: Profiler</div>
+                            <div class="role-desc" style="font-size:0.65rem;">Generates source data schema.</div>
+                        </div>
+
+                        <div class="avatar-card ai-theme ai-sat" style="left:50%; top:8%; padding:0.6rem; width:9rem;">
+                            <div class="avatar-img" style="width:2.5rem; height:2.5rem;"><i data-lucide="database"></i>
+                            </div>
+                            <div class="role-title" style="font-size:0.75rem;">Agent: Ingestion</div>
+                            <div class="role-desc" style="font-size:0.65rem;">Builds ingestion DAGs.</div>
+                        </div>
+
+                        <div class="avatar-card ai-theme ai-sat" style="left:84%; top:20%; padding:0.6rem; width:9rem;">
+                            <div class="avatar-img" style="width:2.5rem; height:2.5rem;"><i data-lucide="blocks"></i>
+                            </div>
+                            <div class="role-title" style="font-size:0.75rem;">Agent: Transform</div>
+                            <div class="role-desc" style="font-size:0.65rem;">Generates dbt models safely.</div>
+                        </div>
+
+                        <div class="avatar-card ai-theme ai-sat" style="left:84%; top:82%; padding:0.6rem; width:9rem;">
+                            <div class="avatar-img" style="width:2.5rem; height:2.5rem;"><i
+                                    data-lucide="bar-chart-big"></i></div>
+                            <div class="role-title" style="font-size:0.75rem;">Agent: Visualization</div>
+                            <div class="role-desc" style="font-size:0.65rem;">Creates raw Superset JSON.</div>
+                        </div>
+
+                        <div class="avatar-card ai-theme ai-sat" style="left:16%; top:82%; padding:0.6rem; width:9rem;">
+                            <div class="avatar-img" style="width:2.5rem; height:2.5rem;"><i
+                                    data-lucide="shield-check"></i></div>
+                            <div class="role-title" style="font-size:0.75rem;">Agent: Governance</div>
+                            <div class="role-desc" style="font-size:0.65rem;">Validates data lineage &amp; rules.</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="avatar-card ai-theme ai-sat" style="left:16%; top:20%;">
-                    <div class="avatar-img"><i data-lucide="search-code"></i></div>
-                    <div class="role-title">Agent: Profiler</div>
-                    <div class="role-desc">Generates source data schema.</div>
-                </div>
-
-                <div class="avatar-card ai-theme ai-sat" style="left:50%; top:8%;">
-                    <div class="avatar-img"><i data-lucide="database"></i></div>
-                    <div class="role-title">Agent: Ingestion</div>
-                    <div class="role-desc">Builds ingestion DAGs.</div>
-                </div>
-
-                <div class="avatar-card ai-theme ai-sat" style="left:84%; top:20%;">
-                    <div class="avatar-img"><i data-lucide="blocks"></i></div>
-                    <div class="role-title">Agent: Transform</div>
-                    <div class="role-desc">Generates dbt models safely.</div>
-                </div>
-
-                <div class="avatar-card ai-theme ai-sat" style="left:84%; top:82%;">
-                    <div class="avatar-img"><i data-lucide="bar-chart-big"></i></div>
-                    <div class="role-title">Agent: Visualization</div>
-                    <div class="role-desc">Creates raw Superset JSON.</div>
-                </div>
-
-                <div class="avatar-card ai-theme ai-sat" style="left:16%; top:82%;">
-                    <div class="avatar-img"><i data-lucide="shield-check"></i></div>
-                    <div class="role-title">Agent: Governance</div>
-                    <div class="role-desc">Validates data lineage & rules.</div>
+                <!-- Right: video -->
+                <div style="flex:1; min-height:0; display:flex; align-items:center;">
+                    <div class="video-placeholder"
+                        style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow); width:100%;">
+                        <video src="videos/multi-Agent.mp4" muted playsinline
+                            style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);"></video>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1178,36 +1245,85 @@
 
             <div class="two-col video-layout" style="align-items:flex-start; margin-top:2rem;">
                 <div class="col col-text">
-                    <div class="progress-list" id="s10-prog">
-                        <!-- All bars fill at once -->
-                        <div class="prog-item">
-                            <div class="prog-label">Agent: Profiler</div>
-                            <div class="prog-track">
-                                <div class="prog-fill ai-fill"></div>
+                    <div style="display:flex; flex-direction:column; gap:0.7rem; width:100%;">
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--ai-color); flex-shrink:0;">
+                                <i data-lucide="search-code" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Agent: Profiler</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Generates source data schema</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--ai-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--ai-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Agent: Ingestion</div>
-                            <div class="prog-track">
-                                <div class="prog-fill ai-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--ai-color); flex-shrink:0;">
+                                <i data-lucide="database" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Agent: Ingestion</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Builds ingestion DAGs</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--ai-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--ai-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Agent: Transformation</div>
-                            <div class="prog-track">
-                                <div class="prog-fill ai-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--ai-color); flex-shrink:0;">
+                                <i data-lucide="blocks" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Agent: Transformation</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Generates dbt models safely</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--ai-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--ai-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Agent: Visualization</div>
-                            <div class="prog-track">
-                                <div class="prog-fill ai-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--ai-color); flex-shrink:0;">
+                                <i data-lucide="bar-chart-big" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Agent: Visualization</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Creates raw Superset JSON</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--ai-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--ai-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
-                        <div class="prog-item">
-                            <div class="prog-label">Agent: Governance</div>
-                            <div class="prog-track">
-                                <div class="prog-fill ai-fill"></div>
+                        <div
+                            style="display:flex; align-items:center; gap:1rem; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:0.75rem; padding:0.9rem 1.2rem;">
+                            <div
+                                style="width:2.8rem; height:2.8rem; border-radius:50%; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:var(--ai-color); flex-shrink:0;">
+                                <i data-lucide="shield-check" style="width:1.4rem;height:1.4rem;"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700; font-size:1rem; color:#1e293b;">Agent: Governance</div>
+                                <div style="font-size:0.82rem; color:#64748b;">Validates data lineage &amp; rules</div>
+                            </div>
+                            <div
+                                style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:var(--ai-color);">
+                                <span
+                                    style="width:7px;height:7px;border-radius:50%;background:var(--ai-color);animation:pulseGlow 1s infinite;"></span>Running
                             </div>
                         </div>
                     </div>
@@ -1215,7 +1331,7 @@
                 <div class="col col-video">
                     <div class="video-placeholder"
                         style="border-color: var(--ai-color); box-shadow: 0 15px 40px var(--ai-glow);">
-                        <video src="videos/exec_task_2.mp4" muted playsinline
+                        <video src="videos/exec_task_3.mp4" muted playsinline
                             style="width:100%; height:100%; object-fit:cover; border-radius: calc(var(--border-radius) - 2px);"></video>
                     </div>
                 </div>
