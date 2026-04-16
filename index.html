@@ -1428,6 +1428,15 @@
                     <span>Code quality and accurate documentation are strictly guaranteed by constraints.</span>
                 </p>
             </div>
+
+            <!-- Replay button + countdown -->
+            <div id="replay-area" style="margin-top:3rem; display:flex; flex-direction:column; align-items:center; gap:1.2rem; animation: slideUpFadeSimple 1s ease 1s forwards; opacity:0;">
+                <button id="replay-btn" onclick="replayPresentation()" style="display:flex; align-items:center; gap:0.8rem; padding:1rem 2.5rem; font-size:1.2rem; font-weight:600; font-family:var(--font-display); background:var(--ai-color); color:#fff; border:none; border-radius:3rem; cursor:pointer; box-shadow:0 4px 20px var(--ai-glow); transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 28px var(--ai-glow)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px var(--ai-glow)'">
+                    <i data-lucide="rotate-ccw" style="width:1.4rem;height:1.4rem;"></i>
+                    Replay Presentation
+                </button>
+                <div id="replay-countdown" style="font-size:1rem; color:var(--text-secondary);"></div>
+            </div>
         </section>
 
     </div>
@@ -1441,11 +1450,17 @@
             'videos/chat_bottleneck_workflow_1776162315636.webp': 16300,
         };
         let webpTimers = [];
+        let autoAdvanceTimer = null;
+        let videoEndedHandler = null;
+        let countdownTimer = null;
+        let countdownInterval = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initDots();
             updateUI();
+            const firstSection = document.getElementById('sec-1');
+            scheduleAutoAdvance(firstSection, firstSection.querySelector('video'));
 
             // Events
             document.getElementById('prev-btn').addEventListener('click', prevSection);
@@ -1465,6 +1480,7 @@
         function prevSection() { if (currentSection > 1) goToSection(currentSection - 1); }
 
         function goToSection(index) {
+            clearReplayTimers();
             // Pause & reset all videos
             document.querySelectorAll('.section video').forEach(v => {
                 v.pause();
@@ -1510,12 +1526,47 @@
 
             currentSection = index;
             updateUI();
+            lucide.createIcons();
+
+            scheduleAutoAdvance(target, vid);
 
             const theme = target.getAttribute('data-theme');
             const pBar = document.getElementById('progress-bar');
             if (theme === 'manual') pBar.style.background = 'var(--manual-color)';
             else if (theme === 'ai') pBar.style.background = 'var(--ai-color)';
             else pBar.style.background = 'var(--text-secondary)';
+        }
+
+        function scheduleAutoAdvance(target, vid) {
+            // Clear any existing auto-advance
+            if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+            if (videoEndedHandler && videoEndedHandler._vid) {
+                videoEndedHandler._vid.removeEventListener('ended', videoEndedHandler);
+                videoEndedHandler = null;
+            }
+
+            if (currentSection >= totalSections) {
+                // Start 10s countdown then auto-replay
+                startReplayCountdown();
+                return;
+            }
+
+            if (vid) {
+                // Wait for video to finish, then advance
+                const handler = () => {
+                    if (currentSection < totalSections) goToSection(currentSection + 1);
+                };
+                handler._vid = vid;
+                videoEndedHandler = handler;
+                vid.addEventListener('ended', handler, { once: true });
+            } else {
+                // Check for animated WebP duration
+                const img = target.querySelector('img[data-src]');
+                const delay = img ? (webpDurations[img.dataset.src] || 7000) : 7000;
+                autoAdvanceTimer = setTimeout(() => {
+                    if (currentSection < totalSections) goToSection(currentSection + 1);
+                }, delay);
+            }
         }
 
         function updateUI() {
@@ -1529,6 +1580,33 @@
 
             document.getElementById('prev-btn').disabled = (currentSection === 1);
             document.getElementById('next-btn').disabled = (currentSection === totalSections);
+        }
+
+        function startReplayCountdown() {
+            clearReplayTimers();
+            let remaining = 10;
+            const countdownEl = document.getElementById('replay-countdown');
+            if (countdownEl) countdownEl.textContent = `Auto-replay in ${remaining}s...`;
+            countdownInterval = setInterval(() => {
+                remaining--;
+                if (countdownEl) countdownEl.textContent = `Auto-replay in ${remaining}s...`;
+                if (remaining <= 0) {
+                    clearReplayTimers();
+                    replayPresentation();
+                }
+            }, 1000);
+        }
+
+        function clearReplayTimers() {
+            if (countdownTimer) { clearTimeout(countdownTimer); countdownTimer = null; }
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            const countdownEl = document.getElementById('replay-countdown');
+            if (countdownEl) countdownEl.textContent = '';
+        }
+
+        function replayPresentation() {
+            clearReplayTimers();
+            goToSection(1);
         }
 
         function initDots() {
